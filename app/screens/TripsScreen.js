@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SectionList } from 'react-native';
+import { SectionList, View, StyleSheet, ImageBackground } from 'react-native';
 
 import { getTrips } from '../services/trips';
 import Screen from '../components/Screen';
@@ -7,6 +7,9 @@ import AppText from '../components/AppText';
 import Container from '../components/Container';
 import Card from '../components/Card';
 import ListNavigation from '../components/ListNavigation';
+import AppButton from '../components/AppButton';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import bgImage from '../assets/images/world-map.png';
 
 const TripsScreen = () => {
   const [trips, setTrips] = useState([]);
@@ -70,33 +73,56 @@ const TripsScreen = () => {
   };
 
   return (
-    <Screen>
-      <Container>
-        <AppText weight="bold" style={{ fontSize: 30 }}>
-          My Trips
-        </AppText>
-        <ListNavigation handlePress={handlePress} items={filter} />
-      </Container>
-      <Container>
-        <SectionList
-          style={{ height: '100%' }}
-          sections={trips}
-          keyExtractor={(item, index) => item + index}
-          renderItem={({ item }) => (
-            <Card
-              title={item.title}
-              subtitle={item.startString + ' - ' + item.endString}
-              image={item.image}
-            />
-          )}
-          stickySectionHeadersEnabled={false}
-          renderSectionHeader={({ section: { title } }) => (
-            <AppText weight="bold">{title}</AppText>
-          )}
-        />
-      </Container>
-    </Screen>
+    <ImageBackground source={bgImage} style={styles.background}>
+      <Screen>
+        <Container>
+          <View style={styles.header}>
+            <AppText weight="bold" style={{ fontSize: 30 }}>
+              My Trips
+            </AppText>
+            <AppButton>
+              <MaterialCommunityIcons name="plus" size="30" color="#fff" />
+            </AppButton>
+          </View>
+          <ListNavigation handlePress={handlePress} items={filter} />
+          <SectionList
+            style={styles.list}
+            sections={trips}
+            keyExtractor={(item, index) => item + index}
+            renderItem={({ item }) => (
+              <Card
+                title={item.title}
+                subtitle={item.startString + ' - ' + item.endString}
+                image={item.image}
+              />
+            )}
+            stickySectionHeadersEnabled={false}
+            renderSectionHeader={({ section: { title } }) => (
+              <AppText weight="bold">{title}</AppText>
+            )}
+          />
+        </Container>
+      </Screen>
+    </ImageBackground>
   );
 };
+
+const styles = StyleSheet.create({
+  background: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  list: {
+    height: '100%',
+    paddingTop: 20,
+  },
+});
 
 export default TripsScreen;
