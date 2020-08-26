@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-function Icon({ name, size = 40, backgroundColor, iconColor = '#fff' }) {
+function Icon({ name, size = 40, backgroundColor, iconColor = '#000' }) {
   return (
     <View
       style={{

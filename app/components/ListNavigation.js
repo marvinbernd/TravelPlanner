@@ -7,10 +7,11 @@ import defaultStyles from '../config/styles';
 function ListNavigation({ items, style, handlePress }) {
   return (
     <View style={[style, styles.navigation]}>
-      {items.map((item) => (
+      {items.map((item, index) => (
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => handlePress(item.label)}
+          key={index}
         >
           <View style={[styles.itemWrapper, item.active && styles.active]}>
             <AppText

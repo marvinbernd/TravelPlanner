@@ -10,9 +10,11 @@ import ListNavigation from '../components/ListNavigation';
 import AppButton from '../components/AppButton';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import bgImage from '../assets/images/world-map.png';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const TripsScreen = () => {
+const TripsScreen = ({ navigation }) => {
   const [trips, setTrips] = useState([]);
+  const [filteredTrips, setFilteredTrips] = useState([]);
   const [filter, setFilter] = useState([
     {
       label: 'Upcoming',
@@ -27,7 +29,12 @@ const TripsScreen = () => {
   ]);
 
   useEffect(() => {
-    let filteredTrips = getTrips();
+    const tripsArr = getTrips();
+    setTrips(tripsArr);
+  }, []);
+
+  useEffect(() => {
+    let filteredTrips = trips;
 
     filter.forEach((f) => {
       if (f.label === 'Upcoming' && f.active) {
@@ -61,8 +68,8 @@ const TripsScreen = () => {
       }
     });
 
-    setTrips(filteredTrips);
-  }, [filter]);
+    setFilteredTrips(filteredTrips);
+  }, [trips, filter]);
 
   const handlePress = (label) => {
     let filterArr = [...filter];
@@ -81,24 +88,28 @@ const TripsScreen = () => {
               My Trips
             </AppText>
             <AppButton>
-              <MaterialCommunityIcons name="plus" size="30" color="#fff" />
+              <MaterialCommunityIcons name="plus" size={30} color="#fff" />
             </AppButton>
           </View>
           <ListNavigation handlePress={handlePress} items={filter} />
           <SectionList
             style={styles.list}
-            sections={trips}
+            sections={filteredTrips}
             keyExtractor={(item, index) => item + index}
             renderItem={({ item }) => (
-              <Card
-                title={item.title}
-                subtitle={item.startString + ' - ' + item.endString}
-                image={item.image}
-              />
+              <TouchableOpacity onPress={() => navigation.navigate('Details')}>
+                <Card
+                  title={item.title}
+                  subtitle={item.startString + ' - ' + item.endString}
+                  image={item.image}
+                />
+              </TouchableOpacity>
             )}
             stickySectionHeadersEnabled={false}
-            renderSectionHeader={({ section: { title } }) => (
-              <AppText weight="bold">{title}</AppText>
+            renderSectionHeader={({ section: { year, month } }) => (
+              <AppText weight="bold">
+                {month} {year}
+              </AppText>
             )}
           />
         </Container>
