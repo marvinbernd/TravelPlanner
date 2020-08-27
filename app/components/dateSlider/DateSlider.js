@@ -33,12 +33,12 @@ const DateSlider = ({
         showsHorizontalScrollIndicator={false}
         onContentSizeChange={(w, h) => init(w)}
       >
-        {items.map((item, index) => (
+        {items.map((item) => (
           <DateItem
             date={item}
             handleClick={handleClick}
             isActive={activeDate.getDate() === item.getDate() ? true : false}
-            key={index}
+            key={item}
           />
         ))}
       </ScrollView>

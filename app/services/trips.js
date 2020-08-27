@@ -125,20 +125,20 @@ const trips = [
       },
       {
         id: 2,
-        date: new Date('2020-12-27T12:00:00'),
+        date: new Date('2020-12-27T15:00:00'),
         type: 'hotel',
         title: 'The Betsy Hotel',
       },
       {
         id: 3,
-        date: new Date('2020-12-27T12:00:00'),
+        date: new Date('2020-12-27T19:00:00'),
         type: 'silverware',
         title: 'Nobu Miami Beach',
       },
     ],
   },
   {
-    id: 3,
+    id: 2,
     title: 'Bali',
     start: new Date('2021-02-08'),
     end: new Date('2021-02-22'),
@@ -147,7 +147,7 @@ const trips = [
     image: require('../assets/images/bali.jpg'),
   },
   {
-    id: 4,
+    id: 3,
     title: 'Amsterdam',
     start: new Date('2021-02-26'),
     end: new Date('2021-02-28'),
@@ -156,7 +156,7 @@ const trips = [
     image: require('../assets/images/amsterdam.jpg'),
   },
   {
-    id: 5,
+    id: 4,
     title: 'Chile',
     start: new Date('2019-12-26'),
     end: new Date('2019-01-06'),
@@ -165,7 +165,7 @@ const trips = [
     image: require('../assets/images/chile.jpg'),
   },
   {
-    id: 6,
+    id: 5,
     title: 'Chile',
     start: new Date('2022-12-26'),
     end: new Date('2022-01-06'),
@@ -220,4 +220,16 @@ export function getTrips() {
 
 export function getTrip(id) {
   return trips.find((trip) => trip.id === id);
+}
+
+export function addTrip(title, start, end, image) {
+  console.log(trips);
+  trips.push({
+    id: trips.length + 1,
+    title,
+    end,
+    start,
+    image: require('../assets/images/chile.jpg'),
+  });
+  console.log(trips);
 }

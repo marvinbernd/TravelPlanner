@@ -5,5 +5,6 @@ export default {
   text: {
     color: colors.black,
     fontSize: 18,
+    fontFamily: 'Montserrat_600SemiBold',
   },
 };

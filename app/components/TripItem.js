@@ -6,7 +6,7 @@ import Icon from './Icon';
 import defaultStyles from '../config/styles';
 
 const TripItem = ({ item }) => {
-  const hours = item.date.getHours();
+  const hours = item.date.getUTCHours();
   const minutes = item.date.getMinutes() === 0 ? '00' : item.date.getMinutes();
   const time = hours + ':' + minutes;
 

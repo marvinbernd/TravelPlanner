@@ -87,7 +87,10 @@ const TripsScreen = ({ navigation }) => {
             <AppText weight="bold" style={{ fontSize: 30 }}>
               My Trips
             </AppText>
-            <AppButton>
+            <AppButton
+              circle={true}
+              onPress={() => navigation.navigate('TripEdit')}
+            >
               <MaterialCommunityIcons name="plus" size={30} color="#fff" />
             </AppButton>
           </View>

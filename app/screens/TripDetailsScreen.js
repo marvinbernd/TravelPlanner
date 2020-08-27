@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Screen from '../components/Screen';
 import {
   ImageBackground,
@@ -7,6 +8,7 @@ import {
   ScrollView,
   FlatList,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
 import bgImage from '../assets/images/tulum.jpg';
 import AppText from '../components/AppText';
@@ -16,8 +18,9 @@ import DateSlider from '../components/dateSlider/DateSlider';
 import { getTrip } from '../services/trips';
 import Container from '../components/Container';
 import TripItem from '../components/TripItem';
+import AppButton from '../components/AppButton';
 
-const TripDetails = (props) => {
+const TripDetailsScreen = ({ navigation, navigation: { goBack } }) => {
   const [trip, setTrip] = useState(null);
   const [activeDate, setActiveDate] = useState(null);
   const [tripItems, setTripItems] = useState([]);
@@ -47,9 +50,25 @@ const TripDetails = (props) => {
   };
 
   return (
-    <View>
+    <>
       <ImageBackground source={bgImage} style={styles.background}>
         <View style={styles.overlay}>
+          <SafeAreaView style={styles.header}>
+            <TouchableOpacity onPress={() => goBack()}>
+              <MaterialCommunityIcons
+                name="arrow-left"
+                size={25}
+                style={styles.headerIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('TripEdit')}>
+              <MaterialCommunityIcons
+                name="pencil"
+                size={25}
+                style={styles.headerIcon}
+              />
+            </TouchableOpacity>
+          </SafeAreaView>
           <View style={styles.content}>
             <AppText weight="bold" style={styles.title}>
               Mexico
@@ -74,12 +93,21 @@ const TripDetails = (props) => {
           <FlatList
             data={tripItems}
             renderItem={({ item }) => <TripItem item={item} />}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             style={styles.itemsList}
           />
         )}
       </Container>
-    </View>
+      <View style={styles.addButtonContainer}>
+        <AppButton
+          circle={true}
+          size={50}
+          onPress={() => navigation.navigate('TripEdit')}
+        >
+          <MaterialCommunityIcons name="plus" size={40} color="#fff" />
+        </AppButton>
+      </View>
+    </>
   );
 };
 
@@ -96,6 +124,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    position: 'absolute',
+    top: 0,
+  },
+  headerIcon: {
+    color: defaultStyles.colors.white,
+  },
   content: {
     alignItems: 'center',
   },
@@ -109,6 +147,12 @@ const styles = StyleSheet.create({
   itemsList: {
     height: '100%',
   },
+  addButtonContainer: {
+    position: 'absolute',
+    bottom: 50,
+    width: '100%',
+    alignItems: 'center',
+  },
 });
 
-export default TripDetails;
+export default TripDetailsScreen;

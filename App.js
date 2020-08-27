@@ -4,7 +4,8 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import TripsScreen from './app/screens/TripsScreen';
-import TripDetails from './app/screens/TripDetails';
+import TripDetailsScreen from './app/screens/TripDetailsScreen';
+import TripEditScreen from './app/screens/TripEditScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,7 +26,8 @@ export default () => {
         }}
       >
         <Stack.Screen name="Home" component={TripsScreen} />
-        <Stack.Screen name="Details" component={TripDetails} />
+        <Stack.Screen name="Details" component={TripDetailsScreen} />
+        <Stack.Screen name="TripEdit" component={TripEditScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
