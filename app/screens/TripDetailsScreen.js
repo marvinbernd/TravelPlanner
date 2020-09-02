@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import _ from 'lodash';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Screen from '../components/Screen';
 import {
@@ -19,28 +20,27 @@ import { getTrip } from '../services/trips';
 import Container from '../components/Container';
 import TripItem from '../components/TripItem';
 import AppButton from '../components/AppButton';
+import getFullDate from '../utils/getFullDate';
+import TripEmpty from '../components/TripEmpty';
 
-const TripDetailsScreen = ({ navigation, navigation: { goBack } }) => {
-  const [trip, setTrip] = useState(null);
-  const [activeDate, setActiveDate] = useState(null);
+const TripDetailsScreen = ({ navigation, navigation: { goBack }, route }) => {
+  const [trip, setTrip] = useState();
+  const [activeDate, setActiveDate] = useState();
   const [tripItems, setTripItems] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getTrip(1);
-      setTrip(data);
-      setActiveDate(data.dates[0]);
-    };
-    fetchData();
+    setTrip(route.params);
+    setActiveDate(route.params.start);
   }, []);
 
   useEffect(() => {
     if (!trip) return;
 
-    const active = new Date(activeDate);
-    const items = trip.items.filter(
-      (item) => item.date.getDate() === active.getDate()
-    );
+    const items = trip.items.filter((item) => {
+      const itemDate = getFullDate(new Date(item.date));
+      const selectedDate = getFullDate(new Date(activeDate));
+      if (itemDate === selectedDate) return true;
+    });
 
     setTripItems(items);
   }, [activeDate]);
@@ -49,12 +49,14 @@ const TripDetailsScreen = ({ navigation, navigation: { goBack } }) => {
     setActiveDate(date);
   };
 
+  if (!trip) return null;
+
   return (
     <>
       <ImageBackground source={bgImage} style={styles.background}>
         <View style={styles.overlay}>
           <SafeAreaView style={styles.header}>
-            <TouchableOpacity onPress={() => goBack()}>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
               <MaterialCommunityIcons
                 name="arrow-left"
                 size={25}
@@ -71,32 +73,33 @@ const TripDetailsScreen = ({ navigation, navigation: { goBack } }) => {
           </SafeAreaView>
           <View style={styles.content}>
             <AppText weight="bold" style={styles.title}>
-              Mexico
+              {trip.title}
             </AppText>
-            <AppText style={styles.subtitle}>Dec 26 - Jan 06</AppText>
+            <AppText style={styles.subtitle}>
+              {trip.startString} - {trip.endString}
+            </AppText>
           </View>
         </View>
       </ImageBackground>
-
       <View style={styles.sliderContainer}>
         {trip && (
           <DateSlider
-            items={trip.dates}
+            start={new Date(trip.start)}
+            end={new Date(trip.end)}
             itemsPerInterval={5}
             activeDate={activeDate}
             handleClick={handleClick}
           />
         )}
       </View>
-      <Container>
-        {tripItems && (
-          <FlatList
-            data={tripItems}
-            renderItem={({ item }) => <TripItem item={item} />}
-            keyExtractor={(item) => item.id.toString()}
-            style={styles.itemsList}
-          />
-        )}
+      <Container style={{ flex: 1 }}>
+        {_.isEmpty(tripItems) && <TripEmpty />}
+        <FlatList
+          data={tripItems}
+          renderItem={({ item }) => <TripItem item={item} />}
+          keyExtractor={(item) => item.id.toString()}
+          style={styles.itemsList}
+        />
       </Container>
       <View style={styles.addButtonContainer}>
         <AppButton

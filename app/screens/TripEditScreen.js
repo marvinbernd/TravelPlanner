@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Screen from '../components/Screen';
@@ -11,8 +11,9 @@ import {
 import Container from '../components/Container';
 import { View, StyleSheet } from 'react-native';
 import AppText from '../components/AppText';
-import { addTrip } from '../services/trips';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import tripsApi from '../api/trips';
+import UploadScreen from './UploadScreen';
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required().label('Title'),
@@ -20,9 +21,36 @@ const validationSchema = Yup.object().shape({
   end: Yup.date().required().label('End date'),
 });
 
-const TripEditScreen = ({ navigation: { goBack } }) => {
+const TripEditScreen = ({ navigation, navigation: { goBack } }) => {
+  const [uploadVisible, setUploadVisible] = useState(false);
+  const [progress, setProgress] = useState();
+
+  const handleSubmit = async (trip, { resetForm }) => {
+    setProgress(0);
+    setUploadVisible(true);
+
+    console.log(trip);
+
+    const result = await tripsApi.addTrip(trip, (progress) =>
+      setProgress(progress)
+    );
+
+    if (!result.ok) {
+      setUploadVisible(false);
+      return alert('Could not save the trip.');
+    }
+
+    resetForm();
+    navigation.navigate('Details', result.data);
+  };
+
   return (
     <Screen>
+      <UploadScreen
+        onDone={() => setUploadVisible(false)}
+        progress={progress}
+        visible={uploadVisible}
+      />
       <Container>
         <View style={styles.header}>
           <View style={styles.backButton}>
@@ -35,14 +63,18 @@ const TripEditScreen = ({ navigation: { goBack } }) => {
           </AppText>
         </View>
         <AppForm
-          initialValues={{ title: '', start: new Date(), end: new Date() }}
-          onSubmit={(values) => addTrip(values.title, values.start, values.end)}
+          initialValues={{ title: '', start: new Date(), end: null }}
+          onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
           <FormField maxLength={255} name="title" placeholder="Title" />
           <FormDateTimePicker name="start" title="Start Date" />
-          <FormDateTimePicker name="end" title="End Date" />
-          <SubmitButton goBack={goBack} title="Post" />
+          <FormDateTimePicker
+            name="end"
+            title="End Date"
+            minimumDateField="start"
+          />
+          <SubmitButton title="Post" />
         </AppForm>
       </Container>
     </Screen>

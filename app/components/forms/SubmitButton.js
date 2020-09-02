@@ -8,16 +8,11 @@ import { StyleSheet } from 'react-native';
 
 import defaultStyles from '../../config/styles';
 
-function SubmitButton({ title, goBack }) {
+function SubmitButton({ title }) {
   const { handleSubmit, errors } = useFormikContext();
 
-  const handlePress = () => {
-    handleSubmit();
-    if (_.isEmpty(errors)) goBack();
-  };
-
   return (
-    <AppButton style={styles.container} onPress={() => handlePress()}>
+    <AppButton style={styles.container} onPress={handleSubmit}>
       <AppText style={styles.title}>{title}</AppText>
     </AppButton>
   );

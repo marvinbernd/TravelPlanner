@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SectionList, View, StyleSheet, ImageBackground } from 'react-native';
 
-import { getTrips } from '../services/trips';
 import Screen from '../components/Screen';
 import AppText from '../components/AppText';
 import Container from '../components/Container';
@@ -11,9 +10,14 @@ import AppButton from '../components/AppButton';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import bgImage from '../assets/images/world-map.png';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import useApi from '../hooks/useApi';
+import tripsApi from '../api/trips';
 
 const TripsScreen = ({ navigation }) => {
-  const [trips, setTrips] = useState([]);
+  const { data: trips, error, loading, request: loadTrips } = useApi(
+    tripsApi.getTrips
+  );
+
   const [filteredTrips, setFilteredTrips] = useState([]);
   const [filter, setFilter] = useState([
     {
@@ -29,36 +33,35 @@ const TripsScreen = ({ navigation }) => {
   ]);
 
   useEffect(() => {
-    const tripsArr = getTrips();
-    setTrips(tripsArr);
+    loadTrips();
   }, []);
 
   useEffect(() => {
-    let filteredTrips = trips;
+    let tempTrips = [...trips];
 
     filter.forEach((f) => {
       if (f.label === 'Upcoming' && f.active) {
-        filteredTrips = filteredTrips.filter((section) => {
+        tempTrips = tempTrips.filter((section) => {
           let sections = [...section.data];
           sections = sections.filter((trip) => {
-            return !trip.draft && trip.end > new Date();
+            return !trip.draft && new Date(trip.end) > new Date();
           });
           if (sections.length !== 0) return true;
         });
       }
 
       if (f.label === 'Past' && f.active) {
-        filteredTrips = filteredTrips.filter((section) => {
+        tempTrips = tempTrips.filter((section) => {
           let sections = [...section.data];
           sections = sections.filter((trip) => {
-            return !trip.draft && trip.end < new Date();
+            return !trip.draft && new Date(trip.end) < new Date();
           });
           if (sections.length !== 0) return true;
         });
       }
 
       if (f.label === 'Drafts' && f.active) {
-        filteredTrips = filteredTrips.filter((section) => {
+        tempTrips = tempTrips.filter((section) => {
           let sections = [...section.data];
           sections = sections.filter((trip) => {
             return trip.draft;
@@ -68,7 +71,7 @@ const TripsScreen = ({ navigation }) => {
       }
     });
 
-    setFilteredTrips(filteredTrips);
+    setFilteredTrips(tempTrips);
   }, [trips, filter]);
 
   const handlePress = (label) => {
@@ -95,12 +98,24 @@ const TripsScreen = ({ navigation }) => {
             </AppButton>
           </View>
           <ListNavigation handlePress={handlePress} items={filter} />
+          {error && (
+            <>
+              <AppText>Couldn't retrieve the listings.</AppText>
+              <AppButton title="Retry" onPress={loadTrips}></AppButton>
+            </>
+          )}
+
           <SectionList
+            contentContainerStyle={{ paddingBottom: 180 }}
             style={styles.list}
             sections={filteredTrips}
             keyExtractor={(item, index) => item + index}
+            refreshing={loading}
+            onRefresh={() => loadTrips()}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => navigation.navigate('Details')}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Details', item)}
+              >
                 <Card
                   title={item.title}
                   subtitle={item.startString + ' - ' + item.endString}

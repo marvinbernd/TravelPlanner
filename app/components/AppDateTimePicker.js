@@ -14,6 +14,7 @@ const AppDateTimePicker = ({
   selectedValue,
   onSelectValue,
   mode = 'date',
+  minimumDate,
 }) => {
   const [show, setShow] = useState(false);
 
@@ -66,6 +67,7 @@ const AppDateTimePicker = ({
           is24Hour={true}
           display="default"
           onChange={onChange}
+          minimumDate={minimumDate}
         />
       )}
     </>

@@ -222,14 +222,7 @@ export function getTrip(id) {
   return trips.find((trip) => trip.id === id);
 }
 
-export function addTrip(title, start, end, image) {
-  console.log(trips);
-  trips.push({
-    id: trips.length + 1,
-    title,
-    end,
-    start,
-    image: require('../assets/images/chile.jpg'),
-  });
-  console.log(trips);
+export function addTrip(trip) {
+  trip.id = trips.length + 1;
+  trips.push(trip);
 }

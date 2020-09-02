@@ -1,22 +1,42 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import DateItem from './DateItem';
 
 const DateSlider = ({
-  items,
+  start,
+  end,
   itemsPerInterval = 1,
   handleClick,
   activeDate,
 }) => {
+  const [dates, setDates] = React.useState([]);
   const [interval, setInterval] = React.useState(1);
   const [intervals, setIntervals] = React.useState(1);
   const [width, setWidth] = React.useState(0);
+
+  const getDatesBetweenDates = (startDate, endDate) => {
+    console.log('a', endDate);
+    let dates = [];
+    //to avoid modifying the original date
+    const theDate = new Date(startDate);
+    const theEndDate = new Date(endDate);
+    while (theDate <= theEndDate) {
+      dates = [...dates, new Date(theDate)];
+      theDate.setDate(theDate.getDate() + 1);
+    }
+    return dates;
+  };
+
+  React.useEffect(() => {
+    const dates = getDatesBetweenDates(start, end);
+    setDates(dates);
+  }, []);
 
   const init = (width) => {
     // initialise width
     setWidth(width);
     // initialise total intervals
-    const totalItems = items.length;
+    const totalItems = dates.length;
     setIntervals(Math.ceil(totalItems / itemsPerInterval));
   };
 
@@ -33,12 +53,12 @@ const DateSlider = ({
         showsHorizontalScrollIndicator={false}
         onContentSizeChange={(w, h) => init(w)}
       >
-        {items.map((item) => (
+        {dates.map((date) => (
           <DateItem
-            date={item}
+            date={date}
             handleClick={handleClick}
-            isActive={activeDate.getDate() === item.getDate() ? true : false}
-            key={item}
+            isActive={activeDate.getDate() === date.getDate() ? true : false}
+            key={date}
           />
         ))}
       </ScrollView>
